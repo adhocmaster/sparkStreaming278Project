@@ -1,4 +1,4 @@
-package org.sia.chapter03App
+package com.adhocmaster.cmps278.spark
 
 import org.apache.spark.sql.SparkSession
 
