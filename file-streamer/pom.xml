@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.adhocmaster</groupId>
-  <artifactId>cmps278.spark</artifactId>
+  <artifactId>scala.fileStreamer</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>US Baby Names in Spark</name>
+  <name>File Streamer for Spark Ingestion</name>
   <description></description>
   <inceptionYear>2018</inceptionYear>
   <licenses>
@@ -50,14 +50,6 @@
       <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming -->
-	<dependency>
-	    <groupId>org.apache.spark</groupId>
-	    <artifactId>spark-streaming_${scala.tools.version}</artifactId>
-	    <version>${spark.version}</version>
-	    <scope>provided</scope>
-	</dependency>
-	    
 
     <!-- Test -->
     <dependency>
@@ -69,13 +61,13 @@
     <dependency>
       <groupId>org.specs2</groupId>
       <artifactId>specs2-core_${scala.tools.version}</artifactId>
-      <version>3.7</version>
+      <version>3.7.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.specs2</groupId>
       <artifactId>specs2-junit_${scala.tools.version}</artifactId>
-      <version>3.7</version>
+      <version>3.7.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
