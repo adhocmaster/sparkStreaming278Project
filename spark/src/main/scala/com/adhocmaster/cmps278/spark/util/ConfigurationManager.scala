@@ -2,8 +2,11 @@ package com.adhocmaster.cmps278.spark.util
 
 import java.io._
 import scala.io.Source
+import org.apache.log4j.Logger
 
 object ConfigurationManager {
+
+  val logger = Logger.getLogger( getClass.getName )
 
   var confs: Map[String, String] = Map()
 
@@ -14,7 +17,7 @@ object ConfigurationManager {
 
     val tuples = lines.map( line => {
 
-      println( line )
+      logger.info( line )
 
       val arr = line.split( "=" )
 
