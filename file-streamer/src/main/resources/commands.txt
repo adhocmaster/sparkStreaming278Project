@@ -1,0 +1,2 @@
+arguments
+F:/myProjects/cmps278/data/names F:/myProjects/cmps278/data/filestreamdir 100
