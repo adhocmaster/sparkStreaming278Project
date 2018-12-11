@@ -1,7 +1,7 @@
 import org.apache.spark.streaming._
 import org.apache.spark._
 
-ssc = new StreamingContext( sc, Milliseconds(100) )
+val ssc = new StreamingContext( sc, Seconds(1) )
 case class NameHistory( state: String, gender: String, year: Int, name: String, number: Int )
 val fileStream = ssc.textFileStream( "F:/myProjects/cmps278/data/filestreamdir" )
 
@@ -29,5 +29,8 @@ val nameHistoryStream = fileStream.flatMap( line => {
 
     } )
     
-nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 )
+val results = nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 )
 results.repartition( 1 ).saveAsTextFiles( "F:/myProjects/cmps278/data/fileoutputstreamdir" + "/DSApp", "txt" )
+
+ssc.start()
+ssc.awaitTerminationOrTimeout(15000)

@@ -15,15 +15,16 @@ object ConfigurationManager {
     val stream: InputStream = getClass.getResourceAsStream( "/application.properties" )
     val lines = Source.fromInputStream( stream ).getLines
 
-    val tuples = lines.map( line => {
+    val tuples = lines.filter( line => !( line.trim.isEmpty() || line.trim.startsWith( "#" ) ) )
+      .map( line => {
 
-      logger.info( line )
+        logger.info( line )
 
-      val arr = line.split( "=" )
+        val arr = line.split( "=" )
 
-      ( arr( 0 ).trim, arr( 1 ).trim )
+        ( arr( 0 ).trim, arr( 1 ).trim )
 
-    } )
+      } )
 
     confs = tuples.toMap
 

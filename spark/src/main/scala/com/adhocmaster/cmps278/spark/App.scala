@@ -21,7 +21,8 @@ object App {
   def main( args: Array[String] ) {
 
     init
-    run
+    runStreamApp
+    runStreamer
 
   }
 
@@ -36,13 +37,13 @@ object App {
       .getOrCreate()
 
     sc = spark.sparkContext
-    ssc = new StreamingContext( sc, Milliseconds( ConfigurationManager.getVal( "streaming.intervalInMiliseconds" ).get.toLong ) )
+    ssc = new StreamingContext( sc, Milliseconds( ConfigurationManager.getVal( "streaming.intervalInMilliseconds" ).get.toLong ) )
 
     //    BabyNames.loadAsDF( spark )
 
   }
 
-  def run = {
+  def runStreamApp = {
 
     val streamingType = ConfigurationManager.getVal( "streaming.type" ).get
     val streamingOperation = ConfigurationManager.getVal( "streaming.operation" ).get
@@ -55,6 +56,13 @@ object App {
       dsApp.run
 
     }
+
+  }
+
+  def runStreamer = {
+
+    ssc.start()
+    ssc.awaitTerminationOrTimeout( ConfigurationManager.getVal( "streaming.timeoutInMilliseconds" ).get.toLong )
 
   }
 

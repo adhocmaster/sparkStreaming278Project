@@ -50,7 +50,12 @@ class DSApp(
     }
 
     // 6. save output
-    results.repartition( 1 ).saveAsTextFiles( outputDir + "/DSApp", "txt" )
+    val repart = results.repartition( 1 )
+
+    logger.warn( s"Saving output at $outputDir/DSApp.txt" )
+    logger.warn( s"Number of items in part: ${repart.count}" )
+
+    repart.saveAsTextFiles( outputDir + "/DSApp", "txt" )
 
   }
 
