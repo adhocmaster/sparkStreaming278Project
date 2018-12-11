@@ -14,13 +14,14 @@ import com.adhocmaster.cmps278.spark.dstream.DSApp
 object App {
 
   val logger = Logger.getLogger( getClass.getName )
-  var spark = null
+  var spark: SparkSession = null
   var sc: SparkContext = null
   var ssc: StreamingContext = null
 
   def main( args: Array[String] ) {
 
     init
+    run
 
   }
 
@@ -29,7 +30,7 @@ object App {
     ConfigurationManager.load()
     println( ConfigurationManager.toString )
 
-    val spark = SparkSession.builder()
+    spark = SparkSession.builder()
       .appName( "The swankiest Spark app ever" )
       .master( "local[*]" )
       .getOrCreate()
@@ -38,6 +39,10 @@ object App {
     ssc = new StreamingContext( sc, Milliseconds( ConfigurationManager.getVal( "streaming.intervalInMiliseconds" ).get.toLong ) )
 
     //    BabyNames.loadAsDF( spark )
+
+  }
+
+  def run = {
 
     val streamingType = ConfigurationManager.getVal( "streaming.type" ).get
     val streamingOperation = ConfigurationManager.getVal( "streaming.operation" ).get
