@@ -8,7 +8,5 @@ class SSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, input
 
   def run = {
 
-    val fileStream = ssc.textFileStream( inputDir )
-
   }
 }
