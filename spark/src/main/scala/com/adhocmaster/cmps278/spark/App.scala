@@ -61,8 +61,11 @@ object App {
 
   def runStreamer = {
 
+    val timeoutInMilliseconds = ConfigurationManager.getVal( "streaming.timeoutInMilliseconds" ).get.toLong
     ssc.start()
-    ssc.awaitTerminationOrTimeout( ConfigurationManager.getVal( "streaming.timeoutInMilliseconds" ).get.toLong )
+    ssc.awaitTerminationOrTimeout( timeoutInMilliseconds )
+
+    Thread.sleep( timeoutInMilliseconds + 2000 ) //
 
   }
 
