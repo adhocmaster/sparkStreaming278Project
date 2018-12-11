@@ -9,7 +9,13 @@ import org.apache.spark.storage.StorageLevel
 import com.adhocmaster.cmps278.spark.util.ConfigurationManager
 import org.apache.spark.streaming.dstream.DStream
 
-class DSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, inputDir: String, operation: String ) {
+class DSApp(
+  spark:     SparkSession,
+  sc:        SparkContext,
+  ssc:       StreamingContext,
+  inputDir:  String,
+  outputDir: String,
+  operation: String ) {
 
   var storageLevel: StorageLevel = StorageLevel.NONE
   val logger = Logger.getLogger( getClass.getName )
@@ -42,6 +48,9 @@ class DSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, input
       case _             => throw new NotImplementedError( s"$operation not implemented" )
 
     }
+
+    // 6. save output
+    results.repartition( 1 ).saveAsTextFiles( outputDir + "/DSApp", "txt" )
 
   }
 
@@ -88,6 +97,8 @@ class DSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, input
   }
 
   def countByName = {
+
+    nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 )
 
   }
   def countByNameRepartition = {

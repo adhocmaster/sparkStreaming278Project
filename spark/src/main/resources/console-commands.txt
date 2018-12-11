@@ -1,0 +1,33 @@
+import org.apache.spark.streaming._
+import org.apache.spark._
+
+ssc = new StreamingContext( sc, Milliseconds(100) )
+case class NameHistory( state: String, gender: String, year: Int, name: String, number: Int )
+val fileStream = ssc.textFileStream( "F:/myProjects/cmps278/data/filestreamdir" )
+
+val nameHistoryStream = fileStream.flatMap( line => {
+
+      val strArr = line.split( "," )
+
+      try {
+
+        List( NameHistory(
+          state  = strArr( 0 ).trim,
+          gender = strArr( 1 ).trim,
+          year   = strArr( 2 ).trim.toInt,
+          name   = strArr( 3 ).trim,
+          number = strArr( 4 ).trim.toInt ) )
+
+      } catch {
+
+        case e: Throwable =>
+          //          logger.warn( s"Wrong line format ($e) + $line" )
+          print( s"Wrong line format ($e) + $line" )
+          List()
+
+      }
+
+    } )
+    
+nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 )
+results.repartition( 1 ).saveAsTextFiles( "F:/myProjects/cmps278/data/fileoutputstreamdir" + "/DSApp", "txt" )

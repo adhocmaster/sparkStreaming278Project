@@ -47,10 +47,11 @@ object App {
     val streamingType = ConfigurationManager.getVal( "streaming.type" ).get
     val streamingOperation = ConfigurationManager.getVal( "streaming.operation" ).get
     val inputDir = ConfigurationManager.getVal( "data.source.stream" ).get
+    val outputDir = ConfigurationManager.getVal( "data.destination.stream" ).get
 
     if ( streamingType == "DStream" ) {
 
-      val dsApp = new DSApp( spark, sc, ssc, inputDir, streamingOperation )
+      val dsApp = new DSApp( spark, sc, ssc, inputDir, outputDir, streamingOperation )
       dsApp.run
 
     }
