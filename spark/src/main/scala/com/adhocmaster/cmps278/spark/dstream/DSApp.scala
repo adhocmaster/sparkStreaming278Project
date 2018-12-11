@@ -9,7 +9,7 @@ import org.apache.spark.storage.StorageLevel
 import com.adhocmaster.cmps278.spark.util.ConfigurationManager
 import org.apache.spark.streaming.dstream.DStream
 
-class DSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, inputDir: String ) {
+class DSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, inputDir: String, operation: String ) {
 
   var storageLevel: StorageLevel = StorageLevel.NONE
   val logger = Logger.getLogger( getClass.getName )

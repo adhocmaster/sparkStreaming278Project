@@ -6,6 +6,7 @@ import com.adhocmaster.cmps278.spark.data.BabyNames
 import org.apache.log4j.Logger
 import org.apache.spark._
 import org.apache.spark.streaming._
+import com.adhocmaster.cmps278.spark.dstream.DSApp
 
 /**
  * @author ${user.name}
@@ -36,7 +37,16 @@ object App {
     sc = spark.sparkContext
     ssc = new StreamingContext( sc, Milliseconds( ConfigurationManager.getVal( "streaming.intervalInMiliseconds" ).get.toLong ) )
 
-    BabyNames.loadAsDF( spark )
+    //    BabyNames.loadAsDF( spark )
+
+    val streamingType = ConfigurationManager.getVal( "streaming.type" ).get
+    val streamingOperation = ConfigurationManager.getVal( "streaming.operation" ).get
+    val inputDir = ConfigurationManager.getVal( "data.source.stream" ).get
+
+    if ( streamingType == "DStream" ) {
+      val dsApp = new DSApp( spark, sc, ssc, inputDir, streamingOperation )
+      dsApp.run
+    }
 
   }
 
