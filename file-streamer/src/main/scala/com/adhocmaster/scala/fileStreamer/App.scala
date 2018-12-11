@@ -31,7 +31,7 @@ object App {
 
     val inputFilePath = args( 0 )
     val outputStreamDir = args( 1 )
-    val totalStreamTimeSeconds = args( 2 ).toLong
+    val totalStreamTimeSeconds = args( 2 ).toInt
 
     val spark = SparkSession.builder()
       .appName( "The swankiest Spark app ever" )
@@ -39,16 +39,27 @@ object App {
       .getOrCreate()
 
     val sc = spark.sparkContext
+    createOutputDir( outputStreamDir )
+
+    createFiles( outputStreamDir, inputFilePath, totalStreamTimeSeconds )
+    logger.warn( "Main thread finished" )
+  }
+
+  def createOutputDir( outputStreamDir: String ) = {
 
     val outputPath = Paths.get( outputStreamDir )
-
     if ( !Files.exists( outputPath ) )
       Files.createDirectories( outputPath )
 
+  }
+
+/***
+   * Files will be created randomly in the period of totalStreamTimeSeconds
+   */
+  def createFiles( outputPath: String, inputFilePath: String, totalStreamTimeSeconds: Int ) = {
+
     val lines = Source.fromFile( inputFilePath ).getLines.toList
-
     logger.warn( s"number of lines ${lines.count( _ => true )}" )
-
     val noFiles: Int = lines.size / linesPerOutputFile
 
     var fileNo = 1
@@ -73,7 +84,6 @@ object App {
 
     executor.shutdown()
     executor.awaitTermination( totalStreamTimeSeconds * 2, TimeUnit.SECONDS )
-    logger.warn( "Main thread finished" )
-  }
 
+  }
 }
