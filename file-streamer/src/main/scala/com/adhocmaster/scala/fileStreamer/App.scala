@@ -25,13 +25,13 @@ object App {
   val logger = Logger.getLogger( getClass.getName )
 
   val linesPerOutputFile = 5000
-  val totalStreamTimeSeconds = 10
+  var totalStreamTimeSeconds = 10
 
   def main( args: Array[String] ) {
 
     val inputFilePath = args( 0 )
     val outputStreamDir = args( 1 )
-    val intervalInMiliSeconds = args( 2 ).toLong
+    val totalStreamTimeSeconds = args( 2 ).toLong
 
     val spark = SparkSession.builder()
       .appName( "The swankiest Spark app ever" )

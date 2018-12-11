@@ -1,2 +1,2 @@
-arguments
-F:/myProjects/cmps278/data/names F:/myProjects/cmps278/data/filestreamdir 100
+arguments (last arg is number of seconds over which files will be created
+F:/myProjects/cmps278/data/names F:/myProjects/cmps278/data/filestreamdir 10
