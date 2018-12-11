@@ -25,3 +25,8 @@ Golam Md Muktadir
 For each operation an impact of batching and partition on request time and throughput. Targeting to learn spark streaming 2.0.
 1. One query, and throughput.
 2. One query, throughput, and request time.
+
+$$ WIP
+1. Count names per second without stream persistence
+2. Count names per second with stream persistence (different modes)
+3. Experiment with different batch intervals

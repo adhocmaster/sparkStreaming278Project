@@ -1,21 +1,47 @@
 package com.adhocmaster.cmps278.spark.dstream
 
+import org.apache.log4j.Logger
+import java.sql.Timestamp
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkContext
 import org.apache.spark.streaming.StreamingContext
-import org.apache.log4j.Logger
-import java.sql.Timestamp
+import org.apache.spark.storage.StorageLevel
+import com.adhocmaster.cmps278.spark.util.ConfigurationManager
+import org.apache.spark.streaming.dstream.DStream
 
 class DSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, inputDir: String ) {
 
+  var storageLevel: StorageLevel = StorageLevel.NONE
   val logger = Logger.getLogger( getClass.getName )
+  var nameHistoryStream: DStream[NameHistory] = null
 
   def run = {
 
+    // 1.
+    loadConfigurations
+
+    // 2.
     val fileStream = ssc.textFileStream( inputDir )
     //    val fileStream = ssc.textFileStream( "F:/myProjects/cmps278/data/filestreamdir" )
 
-    val nameHistoryStream = fileStream.flatMap( line => {
+    // 3.
+    createNameHistoryStream( fileStream )
+
+    // 4.
+    if ( storageLevel != StorageLevel.NONE ) {
+
+      nameHistoryStream.persist( storageLevel )
+      logger.warn( s"nameHistoryStream persisted with $storageLevel" )
+
+    }
+
+    // 5.
+
+  }
+
+  def createNameHistoryStream( fileStream: DStream[String] ) = {
+
+    nameHistoryStream = fileStream.flatMap( line => {
 
       val strArr = line.split( "," )
 
@@ -38,5 +64,54 @@ class DSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, input
       }
 
     } )
+
+  }
+
+  def loadConfigurations = {
+
+    val property = ConfigurationManager.getVal( "streaming.persistence.mode" ).get
+    storageLevel = property match {
+
+      case "NONE"            => StorageLevel.NONE
+      case "MEMORY_ONLY"     => StorageLevel.MEMORY_ONLY
+      case "MEMORY_AND_DISK" => StorageLevel.MEMORY_AND_DISK
+      case "DISK_ONLY"       => StorageLevel.DISK_ONLY
+      case _                 => StorageLevel.NONE
+
+    }
+  }
+
+  def countByName = {
+
+  }
+  def countByNameRepartition = {
+
+  }
+
+  def countByYear = {
+
+  }
+
+  def countByYearRepartition = {
+
+  }
+
+  def countByGender = {
+
+  }
+
+  def countByGenderRepartition = {
+
+  }
+
+  def predictBirthYearByName = {
+
+  }
+
+  def predictGenderByName = {
+
+  }
+  def predictGenderByNameByRepartition = {
+
   }
 }
