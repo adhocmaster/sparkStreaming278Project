@@ -24,6 +24,8 @@ object App {
     runStreamApp
     runStreamer
 
+    logger.warn( "Existing App" )
+
   }
 
   def init = {
@@ -63,9 +65,10 @@ object App {
 
     val timeoutInMilliseconds = ConfigurationManager.getVal( "streaming.timeoutInMilliseconds" ).get.toLong
     ssc.start()
-    ssc.awaitTerminationOrTimeout( timeoutInMilliseconds )
+    ssc.awaitTerminationOrTimeout( timeoutInMilliseconds + 5000 ) // some time to start file streaming
 
-    Thread.sleep( timeoutInMilliseconds + 2000 ) //
+    Thread.sleep( timeoutInMilliseconds ) //
+    ssc.stop()
 
   }
 

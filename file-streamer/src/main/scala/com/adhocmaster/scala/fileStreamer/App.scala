@@ -24,7 +24,7 @@ object App {
 
   val logger = Logger.getLogger( getClass.getName )
 
-  val linesPerOutputFile = 5000
+  val linesPerOutputFile = 10000
   var totalStreamTimeSeconds = 10
 
   def main( args: Array[String] ) {
@@ -57,6 +57,8 @@ object App {
    * Files will be created randomly in the period of totalStreamTimeSeconds
    */
   def createFiles( outputPath: String, inputFilePath: String, totalStreamTimeSeconds: Int ) = {
+
+    Random.setSeed( 0 ) // required for reproduction
 
     val lines = Source.fromFile( inputFilePath ).getLines.toList
     logger.warn( s"number of lines ${lines.count( _ => true )}" )
