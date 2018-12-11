@@ -36,6 +36,12 @@ class DSApp( spark: SparkSession, sc: SparkContext, ssc: StreamingContext, input
     }
 
     // 5.
+    val results = operation match {
+
+      case "countByName" => countByName
+      case _             => throw new NotImplementedError( s"$operation not implemented" )
+
+    }
 
   }
 

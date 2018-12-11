@@ -49,8 +49,10 @@ object App {
     val inputDir = ConfigurationManager.getVal( "data.source.stream" ).get
 
     if ( streamingType == "DStream" ) {
+
       val dsApp = new DSApp( spark, sc, ssc, inputDir, streamingOperation )
       dsApp.run
+
     }
 
   }
