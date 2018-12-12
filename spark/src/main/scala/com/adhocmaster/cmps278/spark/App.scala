@@ -31,6 +31,8 @@ object App {
     runStreamApp
     runStreamer
 
+    print( s"Press enter to quit:" )
+    val q = StdIn.readLine()
     logger.warn( "Existing App" )
 
   }
@@ -79,7 +81,7 @@ object App {
 
     val timeoutInMilliseconds = ConfigurationManager.getVal( "streaming.timeoutInMilliseconds" ).get.toLong
 
-    print( s"the streamer will run for ~${timeoutInMilliseconds}ms. Press any enter to continue:" )
+    print( s"the streamer will run for ~${timeoutInMilliseconds}ms. Press enter to continue:" )
     val response = StdIn.readLine()
 
     val start = System.currentTimeMillis()
@@ -87,7 +89,7 @@ object App {
     ssc.awaitTerminationOrTimeout( timeoutInMilliseconds + 5000 ) // some time to start file streaming
 
     //Thread.sleep( timeoutInMilliseconds ) //
-    ssc.stop( false )
+    //ssc.stop( false )
 
     val end = System.currentTimeMillis()
     logger.warn( s"Stream execution time ${end - start}ms" )

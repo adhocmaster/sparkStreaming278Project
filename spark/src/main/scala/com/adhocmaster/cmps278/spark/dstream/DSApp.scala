@@ -8,6 +8,7 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.storage.StorageLevel
 import com.adhocmaster.cmps278.spark.util.ConfigurationManager
 import org.apache.spark.streaming.dstream.DStream
+import org.apache.spark.HashPartitioner
 
 class DSApp(
   spark:     SparkSession,
@@ -45,8 +46,10 @@ class DSApp(
     // 5. get operation results
     val results = operation match {
 
-      case "countByName" => countByName
-      case _             => throw new NotImplementedError( s"$operation not implemented" )
+      case "countByName"            => countByName
+      case "countByNameSort"        => countByNameSort
+      case "countByNameRepartition" => countByNameRepartition
+      case _                        => throw new NotImplementedError( s"$operation not implemented" )
 
     }
 
@@ -58,7 +61,11 @@ class DSApp(
     logger.warn( s"Saving output at $outputDir/DSApp.txt" )
     logger.warn( s"Number of items in part: ${count}" )
 
-    repart.saveAsTextFiles( outputDir + "/DSApp", "txt" )
+    try {
+      repart.saveAsTextFiles( outputDir + "/DSApp", "txt" )
+    } catch {
+      case e: Throwable => logger.warn( s"could not save file in output director" )
+    }
 
   }
 
@@ -109,7 +116,19 @@ class DSApp(
     nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 )
 
   }
+  def countByNameSort = {
+
+    nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 ).transform( ( rdd, time ) => {
+      rdd.sortByKey( false, 24 )
+    } )
+
+  }
   def countByNameRepartition = {
+
+    import spark.implicits._
+    nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 ).transform( ( rdd, time ) => {
+      rdd.repartitionAndSortWithinPartitions( new HashPartitioner( 24 ) )
+    } )
 
   }
 

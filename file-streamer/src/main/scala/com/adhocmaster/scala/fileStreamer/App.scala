@@ -1,23 +1,17 @@
 package com.adhocmaster.scala.fileStreamer
 
-import org.apache.spark.sql.SparkSession
-import org.apache.log4j.Logger
-import java.nio._
-import java.nio.file._
-import scala.sys
-import java.io.BufferedWriter
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import org.spark_project.guava.collect.Iterators
-import java.util.Collections
-import scala.util.Random
-import scala.math
-import scala.io.Source
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import java.io.File
+
+import scala.io.Source
 import scala.io.StdIn
+import scala.util.Random
+
+import org.apache.log4j.Logger
 
 /**
  * @author ${user.name}
@@ -35,14 +29,6 @@ object App {
     val outputStreamDir = args( 1 )
     val totalStreamTimeSeconds = args( 2 ).toInt
     val cleanOutputDir = args( 3 ).toBoolean
-
-    val spark = SparkSession.builder()
-      .appName( "The swankiest Spark app ever" )
-      .master( "local[*]" )
-      .getOrCreate()
-
-    val sc = spark.sparkContext
-    createOutputDir( outputStreamDir )
 
     if ( cleanOutputDir ) {
       cleanDir( outputStreamDir )
@@ -87,7 +73,7 @@ object App {
    */
   def createFiles( outputPath: String, inputFilePath: String, totalStreamTimeSeconds: Int ) = {
 
-    print( s"the file streamer will run for ~${totalStreamTimeSeconds * 1000}ms. Press any enter to continue:" )
+    print( s"the file streamer will run for ~${totalStreamTimeSeconds * 1000}ms. Press enter to continue:" )
     val response = StdIn.readLine()
 
     Random.setSeed( 0 ) // required for reproduction
@@ -117,7 +103,9 @@ object App {
     }
 
     executor.shutdown()
-    executor.awaitTermination( totalStreamTimeSeconds * 2, TimeUnit.SECONDS )
+    executor.awaitTermination( totalStreamTimeSeconds, TimeUnit.SECONDS )
+
+    logger.warn( "Existing App" )
 
   }
 }
