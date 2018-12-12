@@ -46,10 +46,11 @@ class DSApp(
     // 5. get operation results
     val results = operation match {
 
-      case "countByName"            => countByName
-      case "countByNameSort"        => countByNameSort
-      case "countByNameRepartition" => countByNameRepartition
-      case _                        => throw new NotImplementedError( s"$operation not implemented" )
+      case "countByName"                  => countByName
+      case "countByNameSort"              => countByNameSort
+      case "countByNameRepartitionedSort" => countByNameRepartitionedSort
+      case "countByNameSortByNumber"      => countByNameSortByNumber
+      case _                              => throw new NotImplementedError( s"$operation not implemented" )
 
     }
 
@@ -119,15 +120,23 @@ class DSApp(
   def countByNameSort = {
 
     nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 ).transform( ( rdd, time ) => {
-      rdd.sortByKey( false, 24 )
+      rdd.sortByKey( false, 1 )
     } )
 
   }
-  def countByNameRepartition = {
+  def countByNameRepartitionedSort = {
 
     import spark.implicits._
     nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 ).transform( ( rdd, time ) => {
-      rdd.repartitionAndSortWithinPartitions( new HashPartitioner( 24 ) )
+      rdd.repartitionAndSortWithinPartitions( new HashPartitioner( 100 ) )
+    } )
+
+  }
+
+  def countByNameSortByNumber = {
+
+    nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 ).transform( ( rdd, time ) => {
+      rdd.sortBy( _._2, false, 24 )
     } )
 
   }
