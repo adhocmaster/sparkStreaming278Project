@@ -60,7 +60,16 @@ object App {
 
   }
 
-  def cleanDir( dir: String ) = {
+  def cleanDir( dir: String ): Unit = {
+
+    print( s"Are you sure to clean $dir?[y/n]:" )
+    val response = StdIn.readLine()
+    if ( response.trim != "y" ) {
+
+      logger.warn( s"skipping cleaning $dir by user interaction" )
+      return
+
+    }
 
     logger.warn( s"cleaning directory $dir" )
 

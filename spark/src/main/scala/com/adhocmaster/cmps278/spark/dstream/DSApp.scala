@@ -20,6 +20,7 @@ class DSApp(
   var storageLevel: StorageLevel = StorageLevel.NONE
   val logger = Logger.getLogger( getClass.getName )
   var nameHistoryStream: DStream[NameHistory] = null
+  var fileStream: DStream[String] = null
 
   def run = {
 
@@ -27,7 +28,7 @@ class DSApp(
     loadConfigurations
 
     // 2.
-    val fileStream = ssc.textFileStream( inputDir )
+    fileStream = ssc.textFileStream( inputDir )
     //    val fileStream = ssc.textFileStream( "F:/myProjects/cmps278/data/filestreamdir" )
 
     // 3.
@@ -41,7 +42,7 @@ class DSApp(
 
     }
 
-    // 5.
+    // 5. get operation results
     val results = operation match {
 
       case "countByName" => countByName
@@ -52,8 +53,10 @@ class DSApp(
     // 6. save output
     val repart = results.repartition( 1 )
 
+    val count = repart.count()
+
     logger.warn( s"Saving output at $outputDir/DSApp.txt" )
-    logger.warn( s"Number of items in part: ${repart.count}" )
+    logger.warn( s"Number of items in part: ${count}" )
 
     repart.saveAsTextFiles( outputDir + "/DSApp", "txt" )
 

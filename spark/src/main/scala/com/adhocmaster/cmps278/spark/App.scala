@@ -10,6 +10,10 @@ import com.adhocmaster.cmps278.spark.dstream.DSApp
 import java.io.File
 import scala.io.StdIn
 import org.specs2.reporter.stdOut
+import java.util.Calendar
+import org.apache.commons.io.FileUtils
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /**
  * @author ${user.name}
@@ -78,11 +82,15 @@ object App {
     print( s"the streamer will run for ~${timeoutInMilliseconds}ms. Press any enter to continue:" )
     val response = StdIn.readLine()
 
+    val start = System.currentTimeMillis()
     ssc.start()
     ssc.awaitTerminationOrTimeout( timeoutInMilliseconds + 5000 ) // some time to start file streaming
 
-    Thread.sleep( timeoutInMilliseconds ) //
+    //Thread.sleep( timeoutInMilliseconds ) //
     ssc.stop( false )
+
+    val end = System.currentTimeMillis()
+    logger.warn( s"Stream execution time ${end - start}ms" )
 
   }
 
@@ -98,13 +106,12 @@ object App {
     }
 
     logger.warn( s"cleaning directory $dir" )
-
     val index = new File( dir );
-    val entries = index.list();
-    for ( s <- entries ) {
-      val currentFile = new File( index.getPath(), s );
-      currentFile.delete();
-    }
+    FileUtils.deleteDirectory( index )
+
+    val outputPath = Paths.get( dir )
+    if ( !Files.exists( outputPath ) )
+      Files.createDirectories( outputPath )
 
   }
 }
