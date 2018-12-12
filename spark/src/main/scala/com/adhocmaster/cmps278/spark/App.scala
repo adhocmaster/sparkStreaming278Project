@@ -47,10 +47,24 @@ object App {
       .master( "local[*]" )
       .getOrCreate()
 
-    sc = spark.sparkContext
-    ssc = new StreamingContext( sc, Milliseconds( ConfigurationManager.getVal( "streaming.intervalInMilliseconds" ).get.toLong ) )
+    initSc
 
-    //    BabyNames.loadAsDF( spark )
+    ssc = new StreamingContext( sc, Milliseconds( ConfigurationManager.getVal( "streaming.intervalInMilliseconds" ).get.toLong ) )
+  }
+
+  def initSc = {
+
+    sc = spark.sparkContext
+
+    val checkpointDir = ConfigurationManager.getVal( "context.checkpointDir" ).get
+    val cleanCheckpointDir = ConfigurationManager.getVal( "context.checkpointDir.clean" ).get.toBoolean
+
+    if ( cleanCheckpointDir ) {
+      cleanDir( checkpointDir )
+    } else {
+      logger.warn( "checkpoint directory not clean" )
+    }
+    sc.setCheckpointDir( checkpointDir )
 
   }
 

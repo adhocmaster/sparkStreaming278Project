@@ -9,6 +9,8 @@ import org.apache.spark.storage.StorageLevel
 import com.adhocmaster.cmps278.spark.util.ConfigurationManager
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.HashPartitioner
+import org.apache.spark.RangePartitioner
+import scala.util.control.Breaks._
 
 class DSApp(
   spark:     SparkSession,
@@ -50,6 +52,8 @@ class DSApp(
       case "countByNameSort"              => countByNameSort
       case "countByNameRepartitionedSort" => countByNameRepartitionedSort
       case "countByNameSortByNumber"      => countByNameSortByNumber
+      case "top100Names"                  => top100Names
+      case "top100NamesWithPartitionSort" => top100NamesWithPartitionSort
       case _                              => throw new NotImplementedError( s"$operation not implemented" )
 
     }
@@ -141,6 +145,57 @@ class DSApp(
 
   }
 
+  def top100Names = {
+
+    val totalState = countByName.updateStateByKey( ( newVals: Seq[Int], countOptional: Option[Int] ) => {
+      countOptional match {
+        case Some( total ) => Some( newVals.sum + total )
+        case None          => Some( newVals.sum )
+      }
+
+    } )
+
+    totalState.transform( ( rdd, time ) => {
+
+      val list = rdd.sortBy( _._2, false ).take( 100 )
+      rdd.filter( t => {
+
+        var found: Boolean = false
+        breakable {
+
+          for ( item <- list ) {
+            if ( item._1 == t._1 ) {
+              found = true
+              break
+            }
+          }
+        }
+
+        found
+
+      } )
+
+    } )
+
+  }
+
+  def top100NamesWithPartitionSort = {
+
+    val totalState = countByName.updateStateByKey( ( newVals: Seq[Int], countOptional: Option[Int] ) => {
+      countOptional match {
+        case Some( total ) => Some( newVals.sum + total )
+        case None          => Some( newVals.sum )
+      }
+
+    } )
+
+    totalState.transform( ( rdd, time ) => {
+
+      val list = rdd.keyBy( t => ( t._2, t._1 ) ).repartitionAndSortWithinPartitions( new HashPartitioner( 10 ) ).take( 100 )
+      rdd.filter( list.contains )
+
+    } )
+  }
   def countByYear = {
 
   }
