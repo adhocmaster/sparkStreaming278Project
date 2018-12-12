@@ -136,7 +136,7 @@ class DSApp(
   def countByNameSortByNumber = {
 
     nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 ).transform( ( rdd, time ) => {
-      rdd.sortBy( _._2, false, 24 )
+      rdd.sortBy( _._2, false, 600 )
     } )
 
   }
