@@ -35,3 +35,6 @@ results.repartition( 1 ).saveAsTextFiles( "F:/myProjects/cmps278/data/fileoutput
 ssc.start()
 ssc.awaitTerminationOrTimeout(15000)
 ssc.stop( false )
+
+
+val df = spark.read.format( "csv" ).option( "header", "true" ).option( "inferSchema", "true" ).load( "F:/myProjects/cmps278/data/names" )

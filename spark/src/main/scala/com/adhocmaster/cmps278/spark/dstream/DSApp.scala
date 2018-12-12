@@ -147,7 +147,7 @@ class DSApp(
 
   def top100Names = {
 
-    val totalState = countByName.updateStateByKey( ( newVals: Seq[Int], countOptional: Option[Int] ) => {
+    val totalState = nameHistoryStream.map( h => ( h.name, h.number ) ).updateStateByKey( ( newVals: Seq[Int], countOptional: Option[Int] ) => {
       countOptional match {
         case Some( total ) => Some( newVals.sum + total )
         case None          => Some( newVals.sum )
@@ -155,9 +155,10 @@ class DSApp(
 
     } )
 
-    totalState.transform( ( rdd, time ) => {
+    totalState.transform( ( rdd ) => {
 
       val list = rdd.sortBy( _._2, false ).take( 100 )
+      //      logger.warn( "found items: " + list.size )
       rdd.filter( t => {
 
         var found: Boolean = false
@@ -191,8 +192,26 @@ class DSApp(
 
     totalState.transform( ( rdd, time ) => {
 
-      val list = rdd.keyBy( t => ( t._2, t._1 ) ).repartitionAndSortWithinPartitions( new HashPartitioner( 10 ) ).take( 100 )
-      rdd.filter( list.contains )
+      val list = rdd.keyBy( t => t._2 ).repartitionAndSortWithinPartitions( new HashPartitioner( 10 ) ).take( 100 )
+
+      //      logger.warn( "found items: " + list.size )
+
+      rdd.filter( t => {
+
+        var found: Boolean = false
+        breakable {
+
+          for ( item <- list ) {
+            if ( item._2._1 == t._1 ) {
+              found = true
+              break
+            }
+          }
+        }
+
+        found
+
+      } )
 
     } )
   }
