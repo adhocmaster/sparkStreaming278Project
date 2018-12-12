@@ -8,6 +8,8 @@ import org.apache.spark._
 import org.apache.spark.streaming._
 import com.adhocmaster.cmps278.spark.dstream.DSApp
 import java.io.File
+import scala.io.StdIn
+import org.specs2.reporter.stdOut
 
 /**
  * @author ${user.name}
@@ -72,6 +74,10 @@ object App {
   def runStreamer = {
 
     val timeoutInMilliseconds = ConfigurationManager.getVal( "streaming.timeoutInMilliseconds" ).get.toLong
+
+    print( s"the streamer will run for ~${timeoutInMilliseconds}ms. Press any enter to continue:" )
+    val response = StdIn.readLine()
+
     ssc.start()
     ssc.awaitTerminationOrTimeout( timeoutInMilliseconds + 5000 ) // some time to start file streaming
 
@@ -80,7 +86,16 @@ object App {
 
   }
 
-  def cleanDir( dir: String ) = {
+  def cleanDir( dir: String ): Unit = {
+
+    print( s"Are you sure to clean $dir?[y/n]:" )
+    val response = StdIn.readLine()
+    if ( response.trim != "y" ) {
+
+      logger.warn( s"skipping cleaning $dir by user interaction" )
+      return
+
+    }
 
     logger.warn( s"cleaning directory $dir" )
 

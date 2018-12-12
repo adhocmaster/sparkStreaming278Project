@@ -11,7 +11,7 @@ class FileThread( wait: Long, outputFilePath: String, items: List[String] ) exte
 
     // 1. wait for some time
 
-    logger.warn( s"Waiting for $wait mili seconds before publishing file $outputFilePath" )
+    logger.debug( s"Waiting for $wait mili seconds before publishing file $outputFilePath" )
     Thread.sleep( wait )
 
     logger.warn( s"writing to $outputFilePath " )

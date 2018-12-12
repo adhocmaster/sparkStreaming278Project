@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.io.File
+import scala.io.StdIn
 
 /**
  * @author ${user.name}
@@ -77,6 +78,9 @@ object App {
    */
   def createFiles( outputPath: String, inputFilePath: String, totalStreamTimeSeconds: Int ) = {
 
+    print( s"the file streamer will run for ~${totalStreamTimeSeconds * 1000}ms. Press any enter to continue:" )
+    val response = StdIn.readLine()
+
     Random.setSeed( 0 ) // required for reproduction
 
     val lines = Source.fromFile( inputFilePath ).getLines.toList
@@ -92,7 +96,7 @@ object App {
       val items = lines.take( linesPerOutputFile )
       lines.drop( linesPerOutputFile )
 
-      logger.warn( s"creating next thread $fileNo" )
+      logger.debug( s"creating next thread $fileNo" )
 
       val wait: Long = Random.nextInt( totalStreamTimeSeconds ) * 1000
       val thread = new FileThread( wait, outputFilePath, items )
