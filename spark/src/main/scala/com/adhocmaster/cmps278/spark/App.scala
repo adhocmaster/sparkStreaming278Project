@@ -43,7 +43,7 @@ object App {
     println( ConfigurationManager.toString )
 
     spark = SparkSession.builder()
-      .appName( "The swankiest Spark app ever" )
+      .appName( "US Baby Names in Spark" )
       .master( "local[*]" )
       .getOrCreate()
 
