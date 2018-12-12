@@ -16,6 +16,7 @@ import scala.io.Source
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.io.File
 
 /**
  * @author ${user.name}
@@ -32,6 +33,7 @@ object App {
     val inputFilePath = args( 0 )
     val outputStreamDir = args( 1 )
     val totalStreamTimeSeconds = args( 2 ).toInt
+    val cleanOutputDir = args( 3 ).toBoolean
 
     val spark = SparkSession.builder()
       .appName( "The swankiest Spark app ever" )
@@ -40,6 +42,10 @@ object App {
 
     val sc = spark.sparkContext
     createOutputDir( outputStreamDir )
+
+    if ( cleanOutputDir ) {
+      cleanDir( outputStreamDir )
+    }
 
     createFiles( outputStreamDir, inputFilePath, totalStreamTimeSeconds )
     logger.warn( "Main thread finished" )
@@ -50,6 +56,19 @@ object App {
     val outputPath = Paths.get( outputStreamDir )
     if ( !Files.exists( outputPath ) )
       Files.createDirectories( outputPath )
+
+  }
+
+  def cleanDir( dir: String ) = {
+
+    logger.warn( s"cleaning directory $dir" )
+
+    val index = new File( dir );
+    val entries = index.list();
+    for ( s <- entries ) {
+      val currentFile = new File( index.getPath(), s );
+      currentFile.delete();
+    }
 
   }
 

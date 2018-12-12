@@ -7,6 +7,7 @@ import org.apache.log4j.Logger
 import org.apache.spark._
 import org.apache.spark.streaming._
 import com.adhocmaster.cmps278.spark.dstream.DSApp
+import java.io.File
 
 /**
  * @author ${user.name}
@@ -51,6 +52,13 @@ object App {
     val streamingOperation = ConfigurationManager.getVal( "streaming.operation" ).get
     val inputDir = ConfigurationManager.getVal( "data.source.stream" ).get
     val outputDir = ConfigurationManager.getVal( "data.destination.stream" ).get
+    val cleanOutputDir = ConfigurationManager.getVal( "data.destination.clean" ).get.toBoolean
+
+    if ( cleanOutputDir ) {
+      cleanDir( outputDir )
+    } else {
+      logger.warn( "Output directory not clean" )
+    }
 
     if ( streamingType == "DStream" ) {
 
@@ -68,8 +76,20 @@ object App {
     ssc.awaitTerminationOrTimeout( timeoutInMilliseconds + 5000 ) // some time to start file streaming
 
     Thread.sleep( timeoutInMilliseconds ) //
-    ssc.stop()
+    ssc.stop( false )
 
   }
 
+  def cleanDir( dir: String ) = {
+
+    logger.warn( s"cleaning directory $dir" )
+
+    val index = new File( dir );
+    val entries = index.list();
+    for ( s <- entries ) {
+      val currentFile = new File( index.getPath(), s );
+      currentFile.delete();
+    }
+
+  }
 }

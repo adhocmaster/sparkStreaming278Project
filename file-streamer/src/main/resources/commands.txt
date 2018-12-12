@@ -1,5 +1,5 @@
 arguments (last arg is number of seconds over which files will be created
-F:/myProjects/cmps278/data/names F:/myProjects/cmps278/data/filestreamdir 10
+F:/myProjects/cmps278/data/names F:/myProjects/cmps278/data/filestreamdir 10 true
 
 
 command=spark-shell --master local[4] --driver-memory 2G --executor-memory 4G --executor-cores 6
