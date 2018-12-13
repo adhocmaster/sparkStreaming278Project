@@ -36,6 +36,36 @@ object ConfigurationManager {
 
   }
 
+  def getInt( name: String, default: Int ): Int = {
+
+    val conf = confs.get( name )
+    if ( conf == None )
+      return default
+
+    return conf.get.toInt
+
+  }
+
+  def getLong( name: String, default: Long ): Long = {
+
+    val conf = confs.get( name )
+    if ( conf == None )
+      return default
+
+    return conf.get.toLong
+
+  }
+
+  def getStr( name: String, default: String ): String = {
+
+    val conf = confs.get( name )
+    if ( conf == None )
+      return default
+
+    return conf.get
+
+  }
+
   override def toString = {
 
     confs.toString()

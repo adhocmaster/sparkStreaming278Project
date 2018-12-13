@@ -131,9 +131,13 @@ class DSApp(
   def countByNameRepartitionedSort = {
 
     import spark.implicits._
-    nameHistoryStream.map( h => ( h.name, h.number ) ).reduceByKey( ( c1, c2 ) => c1 + c2 ).transform( ( rdd, time ) => {
-      rdd.repartitionAndSortWithinPartitions( new HashPartitioner( 100 ) )
-    } )
+    nameHistoryStream.map( h => ( h.name, h.number ) )
+      .reduceByKey( ( c1, c2 ) => c1 + c2 )
+      .transform( ( rdd, time ) => {
+        rdd.repartitionAndSortWithinPartitions(
+          new HashPartitioner(
+            ConfigurationManager.getInt( "countByNameRepartitionedSort.partitions", 12 ) ) )
+      } )
 
   }
 
